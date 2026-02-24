@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./database/dbConfig.js";
+import userRouter from "./views/userRouter.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -20,6 +21,9 @@ connectDB();
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
+
+//custom routes
+app.use("/api/auth", userRouter);
 
 // Start the server and listen on the specified port
 const PORT = process.env.PORT || 3000;
