@@ -1,5 +1,11 @@
 import User from "../models/userSchema.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();    
+
 
 // Controller function to handle user registration
 export const registerUser = async (req, res) => {
@@ -36,7 +42,15 @@ export const loginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid password" });
     }
-    res.status(200).json({ message: "Login successful", user });
+    // Generate JWT token
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    user.tokens = token;
+    await user.save();
+
+    res.status(200).json({ message: "Login successful", token: token });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
